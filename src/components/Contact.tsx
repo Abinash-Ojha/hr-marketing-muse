@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from 'react';
-import { Mail, Phone, MapPin, Linkedin, GitHub, Twitter } from 'lucide-react';
+import { Mail, Phone, MapPin, Linkedin, Github, Twitter } from 'lucide-react';
 
 const Contact = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -93,7 +93,7 @@ const Contact = () => {
                     <Linkedin className="text-accent" size={18} />
                   </a>
                   <a href="#" className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent/10 transition-colors">
-                    <GitHub className="text-accent" size={18} />
+                    <Github className="text-accent" size={18} />
                   </a>
                   <a href="#" className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-accent/10 transition-colors">
                     <Twitter className="text-accent" size={18} />
