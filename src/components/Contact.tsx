@@ -1,9 +1,30 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Mail, Phone, MapPin, Linkedin, Github, Twitter } from 'lucide-react';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Button } from './ui/button';
+
+interface FormData {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
 
 const Contact = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,9 +48,51 @@ const Contact = () => {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Contact form submission logic would go here
+    setIsSubmitting(true);
+    
+    try {
+      // In a real app, you would send this data to your backend API
+      // For demonstration, we'll simulate a successful API call with a timeout
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      console.log('Form submitted:', formData);
+      
+      // Clear the form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+      });
+      
+      // Set success message
+      setSubmitStatus({
+        type: 'success',
+        message: 'Message sent successfully!'
+      });
+      
+      // Clear success message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus({ type: null, message: '' });
+      }, 5000);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setSubmitStatus({
+        type: 'error',
+        message: 'Failed to send message. Please try again later.'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,16 +175,31 @@ const Contact = () => {
             <div className="glass-card p-8">
               <h3 className="text-2xl font-semibold mb-6 text-primary">Send Me a Message</h3>
               
+              {submitStatus.type && (
+                <div 
+                  className={`mb-6 p-4 rounded-md ${
+                    submitStatus.type === 'success' 
+                      ? 'bg-green-50 text-green-700 border border-green-200' 
+                      : 'bg-red-50 text-red-700 border border-red-200'
+                  }`}
+                >
+                  {submitStatus.message}
+                </div>
+              )}
+              
               <form onSubmit={handleSubmit}>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium mb-1">
                       Name
                     </label>
-                    <input
+                    <Input
                       type="text"
                       id="name"
-                      className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full"
                       placeholder="Your name"
                       required
                     />
@@ -131,10 +209,13 @@ const Contact = () => {
                     <label htmlFor="email" className="block text-sm font-medium mb-1">
                       Email
                     </label>
-                    <input
+                    <Input
                       type="email"
                       id="email"
-                      className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full"
                       placeholder="Your email"
                       required
                     />
@@ -144,10 +225,13 @@ const Contact = () => {
                     <label htmlFor="subject" className="block text-sm font-medium mb-1">
                       Subject
                     </label>
-                    <input
+                    <Input
                       type="text"
                       id="subject"
-                      className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className="w-full"
                       placeholder="Subject"
                     />
                   </div>
@@ -156,21 +240,25 @@ const Contact = () => {
                     <label htmlFor="message" className="block text-sm font-medium mb-1">
                       Message
                     </label>
-                    <textarea
+                    <Textarea
                       id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
                       rows={5}
-                      className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-accent/50"
+                      className="w-full"
                       placeholder="Your message"
                       required
-                    ></textarea>
+                    />
                   </div>
                   
-                  <button
+                  <Button
                     type="submit"
-                    className="w-full py-3 px-6 bg-accent text-white rounded-md font-medium hover:bg-accent/90 transition-colors"
+                    className="w-full py-3 bg-accent text-white hover:bg-accent/90"
+                    disabled={isSubmitting}
                   >
-                    Send Message
-                  </button>
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </Button>
                 </div>
               </form>
             </div>
